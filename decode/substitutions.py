@@ -1,5 +1,17 @@
 from string import ascii_uppercase
 import re
+from decode.ciphertexts import Ciphertext
+import termcolor_util as tc
+
+
+class SubstitutionCiphertext(Ciphertext):
+    def __init__(self, text):
+        super().__init__(text)
+
+    def substitute(self, substitutions):
+        for i, letter in enumerate(self.raw_text):
+            if letter in substitutions:
+                self.current_text[i] = (substitutions[letter], tc.green(substitutions[letter]))
 
 
 def check_substitutions(substitutions):
@@ -10,10 +22,6 @@ def check_substitutions(substitutions):
     print('Unsubstituted Letters: {}'.format(''.join(unsubbed)))
     print('Not Yet Found Letters: {}'.format(''.join(unfound)))
     return len(unsubbed)
-
-
-def substitute(text, substitutions):
-    return ''.join(substitutions.get(letter, letter) for letter in text)
 
 
 def ngrams(text, n):

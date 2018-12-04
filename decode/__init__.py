@@ -1,1 +1,2 @@
-import decode
+from decode.substitutions import *
+from decode.ciphertexts import *
