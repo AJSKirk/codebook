@@ -1,7 +1,7 @@
 from string import ascii_uppercase
 import re
 from decode.ciphertexts import Ciphertext
-import termcolor_util as tc
+from collections import Counter
 
 
 class SubstitutionCiphertext(Ciphertext):
@@ -10,23 +10,30 @@ class SubstitutionCiphertext(Ciphertext):
 
     def substitute(self, substitutions):
         for i, letter in enumerate(self.raw_text):
-            if letter in substitutions:
-                self.current_text[i] = (substitutions[letter], tc.green(substitutions[letter]))
+            if letter in substitutions.map:
+                self.current_text[i] = (substitutions.map[letter], 'sub')
+        print(self)
+
+    def get_freqs(self):
+        freqs = Counter(char[0] for char in self.current_text if char[1] == 'raw')
+        return freqs
 
 
-def check_substitutions(substitutions):
-    unsubbed = [letter for letter in ascii_uppercase if letter not in substitutions]
-    unfound = [letter for letter in ascii_uppercase if letter not in substitutions.values()]
-    if len(unsubbed) != len(unfound):
-        raise ValueError('ERROR: Multiple assignments in substitution dictionary')
-    print('Unsubstituted Letters: {}'.format(''.join(unsubbed)))
-    print('Not Yet Found Letters: {}'.format(''.join(unfound)))
-    return len(unsubbed)
+class Substitution:
+    def __init__(self):
+        self.map = {}
 
+    def add(self, raw, sub):
+        self.map[raw] = sub
 
-def ngrams(text, n):
-    words = re.sub('^[A-Z ]', '', text).split(' ')
-    return {word: text.count(word) for word in words if len(word) == n}
+    def check(self):
+        unsubbed = [letter for letter in ascii_uppercase if letter not in self.map]
+        unfound = [letter for letter in ascii_uppercase if letter not in self.map.values()]
+        if len(unsubbed) != len(unfound):
+            raise ValueError('ERROR: Multiple assignments in substitution dictionary')
+        print('Unsubstituted Letters: {}'.format(''.join(unsubbed)))
+        print('Not Yet Found Letters: {}'.format(''.join(unfound)))
+        return len(unsubbed)
 
 
 def special_char_words(text):

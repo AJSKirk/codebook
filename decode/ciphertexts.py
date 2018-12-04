@@ -1,24 +1,43 @@
-import itertools
 import termcolor_util as tc
+from string import ascii_uppercase
 
 
 class Ciphertext:
     def __init__(self, text):
         self.raw_text = text
-        self.reset()
+        self.colours = {'raw': tc.red, 'sub': tc.green}
+        self.current_text = [(raw, 'raw') for raw in self.raw_text]
 
-    def reset(self):
-        self.current_text = [(raw, tc.red(raw)) for raw in self.raw_text]
+    def char_to_string(self, char):
+        return self.colours[char[1]](char[0])
 
-    @property
-    def __str__(self):
-        return ''.join(char[1] for char in self.current_text)
+    def text_to_string(self, text):
+        return ''.join(self.char_to_string(char) for char in text)
+
+    def __repr__(self):
+        return ''.join(self.char_to_string(char) for char in self.current_text)
 
     def ngrams(self, n):
-        pass
+        last_space = 0
+        results = {}
+        for i, char in enumerate(self.current_text):
+            if char[0] == ' ':
+                if i - last_space == n + 1:
+                    word = self.text_to_string(self.current_text[last_space + 1:i])
+                    results[word] = results.get(word, 0) + 1
+                last_space = i
+        for word in results:
+            print('{}   -   {}'.format(word, results[word]))
 
     def special_char_words(self):
-        pass
-
-    def get_freqs(self):
-        pass
+        last_space = 0
+        results = {}
+        for i, char in enumerate(self.current_text):
+            if char[0] == ' ':
+                word = self.current_text[last_space + 1:i]
+                if not all(char[0] in (ascii_uppercase + ';:,.') for char in word):
+                    word = self.text_to_string(word)
+                    results[word] = results.get(word, 0) + 1
+                last_space = i
+        for word in results:
+            print('{}   -   {}'.format(word, results[word]))
