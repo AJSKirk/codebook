@@ -41,3 +41,14 @@ class Ciphertext:
                 last_space = i
         for word in results:
             print('{}   -   {}'.format(word, results[word]))
+
+    def doubles(self):
+        results = {}
+        for i in range(len(self.current_text) - 1):
+            letter = self.char_to_string(self.current_text[i])
+            next_letter =  self.char_to_string(self.current_text[i + 1])
+            if letter == next_letter:
+                results[2 * letter] = results.get(2 * letter, 0) + 1
+
+        for double in results:
+            print('{}   -   {}'.format(double, results[double]))
